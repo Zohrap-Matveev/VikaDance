@@ -51,7 +51,7 @@ public class GetController{
         ProjectDTO projectDTO = projectService.findOneProject(id);
         return ResponseEntity.status(HttpStatus.OK)
                         .contentType(MediaType.valueOf(MediaType.IMAGE_PNG_VALUE))
-                        .body(projectDTO.getImages());
+                        .body(projectDTO.getBytes());
     }
 }
 

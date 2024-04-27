@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -20,8 +22,12 @@ public class ContactService{
     @Transactional
     public ContactDTO create(ContactDTO contactDTO){
         log.info("Creating contact {}", contactDTO);
-        ContactEntity contactEntity = contactMapper.toEntity(contactDTO);
-        contactEntity = contactRepository.save(contactEntity);
-        return contactMapper.toDTO(contactEntity);
+        CompletableFuture.runAsync(() -> {
+            ContactEntity contactEntity = contactMapper.toEntity(contactDTO);
+            contactEntity = contactRepository.save(contactEntity);
+            contactMapper.toDTO(contactEntity);
+        });
+
+        return null;
     }
 }

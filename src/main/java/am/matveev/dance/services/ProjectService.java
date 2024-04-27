@@ -2,8 +2,9 @@ package am.matveev.dance.services;
 
 import am.matveev.dance.dto.ProjectDTO;
 import am.matveev.dance.entities.ProjectsEntity;
-import am.matveev.dance.exceptions.NewsNotFoundException;
+import am.matveev.dance.exceptions.ProjectNotFoundException;
 import am.matveev.dance.mappers.ProjectMapper;
+import am.matveev.dance.repositories.AdminRepository;
 import am.matveev.dance.repositories.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ public class ProjectService{
 
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
+    private final AdminRepository adminRepository;
 
     @Transactional(readOnly = true)
     public List<ProjectDTO> getProjects(){
@@ -33,25 +35,19 @@ public class ProjectService{
     @Transactional(readOnly = true)
     public ProjectDTO findOneProject(int id){
         ProjectsEntity projectsEntity = projectRepository.findById(id)
-                .orElseThrow(NewsNotFoundException ::new);
+                .orElseThrow(ProjectNotFoundException ::new);
         return projectMapper.toDTO(projectsEntity);
     }
 
-//    @Transactional
-//    public ProjectDTO createProject(ProjectDTO projectDTO){
-//        ProjectsEntity projectsEntity = projectMapper.toEntity(projectDTO);
-//        projectsEntity = projectRepository.save(projectsEntity);
-//        return projectMapper.toDTO(projectsEntity);
-//    }
 
     @Transactional
     public ProjectDTO createProject(ProjectDTO projectDTO) {
         try {
-            if (projectDTO == null || projectDTO.getImages() == null || projectDTO.getImages().length == 0) {
+            if (projectDTO == null || projectDTO.getBytes() == null || projectDTO.getBytes().length == 0) {
                 throw new IllegalArgumentException("Project data or image is missing");
             }
 
-            ProjectsEntity projectsEntity = projectMapper.toEntity(projectDTO);
+            ProjectsEntity projectsEntity = projectMapper.toProjectEntity(projectDTO);
             projectsEntity = projectRepository.save(projectsEntity);
             return projectMapper.toDTO(projectsEntity);
         } catch (Exception e) {
@@ -60,13 +56,6 @@ public class ProjectService{
         }
     }
 
-//    @Transactional
-//    public ProjectDTO updateProject(long id, ProjectDTO projectDTO){
-//        ProjectsEntity projectsEntity = projectMapper.toEntity(projectDTO);
-//        projectsEntity.setId(id);
-//        projectsEntity = projectRepository.save(projectsEntity);
-//        return projectMapper.toDTO(projectsEntity);
-//    }
 
     @Transactional
     public ProjectDTO updateProject(int id, ProjectDTO projectDTO) {
@@ -75,8 +64,8 @@ public class ProjectService{
 
             existingProject.setTitle(projectDTO.getTitle());
             existingProject.setDescription(projectDTO.getDescription());
-            existingProject.setImages(projectDTO.getImages());
-            projectRepository.save(projectMapper.toEntity(existingProject));
+            existingProject.setBytes(projectDTO.getBytes());
+            projectRepository.save(projectMapper.toProjectEntity(existingProject));
             return projectDTO;
 
         } catch (Exception e) {
@@ -86,8 +75,4 @@ public class ProjectService{
     }
 
 
-    @Transactional
-    public void deleteProject(int id){
-        projectRepository.deleteById(id);
-    }
 }

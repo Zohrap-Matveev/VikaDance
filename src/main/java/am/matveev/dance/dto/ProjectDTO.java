@@ -11,7 +11,7 @@ public class ProjectDTO{
 
     private String title;
 
-    private byte[] images;
+    private byte[] bytes;
 
     private String description;
 

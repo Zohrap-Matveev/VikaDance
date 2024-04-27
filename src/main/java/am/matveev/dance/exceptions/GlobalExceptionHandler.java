@@ -27,4 +27,13 @@ public class GlobalExceptionHandler{
         );
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler({WrongPasswordException.class})
+    public ResponseEntity<ErrorResponse> handleException(WrongPasswordException ex){
+        ErrorResponse response = new ErrorResponse(
+                "Your password does not match",
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 }

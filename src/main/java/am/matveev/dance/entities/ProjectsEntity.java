@@ -23,7 +23,6 @@ public class ProjectsEntity{
 
     @Lob
     @Column(name = "bytes")
-//    @Type(parameters = "org.hibernate.type.ImageType")
     private byte[] bytes;
 
     @Column(name = "description")
