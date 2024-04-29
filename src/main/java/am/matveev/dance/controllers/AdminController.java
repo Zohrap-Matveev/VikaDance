@@ -110,16 +110,14 @@ public class AdminController{
         }
     }
 
-
-
-    @PostMapping("/check-admin")
-    public ResponseEntity<String> checkAdmin(@RequestBody Map<String, String> requestBody){
-        String enteredPassword = requestBody.get("password");
-        if(checkService.checkAdminPassword(enteredPassword)){
-            return ResponseEntity.ok("Access granted to post methods.");
-        }else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
-        }
-    }
+//    @PostMapping("/check-admin")
+//    public ResponseEntity<String> checkAdmin(@RequestBody Map<String, String> requestBody){
+//        String enteredPassword = requestBody.get("password");
+//        if(checkService.checkAdminPassword(enteredPassword)){
+//            return ResponseEntity.ok("Access granted to post methods.");
+//        }else{
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
+//        }
+//    }
 }
 

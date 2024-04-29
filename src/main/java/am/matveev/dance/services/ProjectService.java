@@ -56,7 +56,6 @@ public class ProjectService{
         }
     }
 
-
     @Transactional
     public ProjectDTO updateProject(int id, ProjectDTO projectDTO) {
         try {
@@ -74,5 +73,8 @@ public class ProjectService{
         }
     }
 
-
+    @Transactional
+    public void deleteProject(int projectId){
+        projectRepository.deleteById(projectId);
+    }
 }

@@ -2,16 +2,14 @@ package am.matveev.dance.controllers;
 
 import am.matveev.dance.dto.NewsDTO;
 import am.matveev.dance.dto.ProjectDTO;
+import am.matveev.dance.services.EmailService;
 import am.matveev.dance.services.NewsService;
 import am.matveev.dance.services.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Base64;
@@ -24,6 +22,7 @@ public class GetController{
 
     private final NewsService newsService;
     private final ProjectService projectService;
+    private final EmailService emailService;
 
     @GetMapping("/news")
     public List<NewsDTO> getAllNews() {
@@ -52,6 +51,17 @@ public class GetController{
         return ResponseEntity.status(HttpStatus.OK)
                         .contentType(MediaType.valueOf(MediaType.IMAGE_PNG_VALUE))
                         .body(projectDTO.getBytes());
+    }
+
+    @PostMapping("/contact/sendMessage")
+    public ResponseEntity<String> sendMessage(@RequestParam("email") String email, @RequestParam("message") String message){
+        boolean messageSent = emailService.sendEmailToAdmin(email, message);
+
+        if(messageSent){
+            return ResponseEntity.ok("Your message has been sent successfully!");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send message.");
+        }
     }
 }
 
