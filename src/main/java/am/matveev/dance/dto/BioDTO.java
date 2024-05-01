@@ -10,9 +10,12 @@ public class BioDTO{
 
     private int id;
 
-    @NotEmpty(message = "Image must not be empty")
-    private byte[] image;
-
     @NotEmpty(message = "FullName must not be empty")
     private String fullName;
+
+    @NotEmpty(message = "Profession must not be empty")
+    private String profession;
+
+    @NotEmpty(message = "BioDescription must not be empty")
+    private String bioDescription;
 }

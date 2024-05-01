@@ -1,10 +1,15 @@
 package am.matveev.dance.controllers;
 
+import am.matveev.dance.dto.ContactDTO;
 import am.matveev.dance.dto.NewsDTO;
 import am.matveev.dance.dto.ProjectDTO;
+import am.matveev.dance.entities.ContactEntity;
+import am.matveev.dance.mappers.ContactMapper;
+import am.matveev.dance.services.ContactService;
 import am.matveev.dance.services.EmailService;
 import am.matveev.dance.services.NewsService;
 import am.matveev.dance.services.ProjectService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,6 +28,8 @@ public class GetController{
     private final NewsService newsService;
     private final ProjectService projectService;
     private final EmailService emailService;
+    private final ContactService contactService;
+    private final ContactMapper contactMapper;
 
     @GetMapping("/news")
     public List<NewsDTO> getAllNews() {
@@ -54,14 +61,22 @@ public class GetController{
     }
 
     @PostMapping("/contact/sendMessage")
-    public ResponseEntity<String> sendMessage(@RequestParam("email") String email, @RequestParam("message") String message){
+    public ResponseEntity<String> sendMessage(@RequestParam("email") String email, @RequestParam("message") String message,
+                                               ContactDTO contactDTO) {
+        ContactEntity contactEntity = contactMapper.toEntity(contactDTO);
+        contactEntity.setEmail(email);
+        contactEntity.setMessage(message);
+
+        contactService.create(contactDTO);
+
         boolean messageSent = emailService.sendEmailToAdmin(email, message);
 
-        if(messageSent){
+        if (messageSent) {
             return ResponseEntity.ok("Your message has been sent successfully!");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send message.");
         }
     }
+
 }
 

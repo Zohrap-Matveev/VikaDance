@@ -15,9 +15,9 @@ public class ContactEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "username")
-    private String username;
-
     @Column(name = "email")
     private String email;
+
+    @Column(name = "message")
+    private String message;
 }

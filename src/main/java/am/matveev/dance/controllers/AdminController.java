@@ -1,14 +1,12 @@
 package am.matveev.dance.controllers;
 
-import am.matveev.dance.dto.NewsDTO;
 import am.matveev.dance.dto.ProjectDTO;
-import am.matveev.dance.entities.AdminEntity;
-import am.matveev.dance.exceptions.WrongPasswordException;
-import am.matveev.dance.repositories.AdminRepository;
 import am.matveev.dance.request.*;
+import am.matveev.dance.services.BioService;
 import am.matveev.dance.services.CheckService;
 import am.matveev.dance.services.NewsService;
 import am.matveev.dance.services.ProjectService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Slf4j
 @RequestMapping("/admin")
@@ -28,9 +25,10 @@ public class AdminController{
     private final NewsService newsService;
     private final ProjectService projectService;
     private final CheckService checkService;
+    private final BioService bioService;
 
     @PostMapping("/news")
-    public ResponseEntity<?> postNews(@RequestBody NewsRequest request){
+    public ResponseEntity<?> postNews(@RequestBody @Valid NewsRequest request){
         if(! checkService.checkAdminPassword(request.getEnteredPassword())){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
         }
@@ -38,7 +36,7 @@ public class AdminController{
     }
 
     @PutMapping("/update/news/{newsId}")
-    public ResponseEntity<?> updateNews(@PathVariable("newsId") int id, @RequestBody UpdateNewsRequest request){
+    public ResponseEntity<?> updateNews(@PathVariable("newsId") int id, @RequestBody @Valid UpdateNewsRequest request){
         if(! checkService.checkAdminPassword(request.getEnteredPassword())){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
         }
@@ -46,7 +44,7 @@ public class AdminController{
     }
 
     @DeleteMapping("/delete/news/{newsId}")
-    public ResponseEntity<?> deleteNews(@PathVariable("newsId") int id, @RequestBody DeleteNewsRequest request){
+    public ResponseEntity<?> deleteNews(@PathVariable("newsId") int id, @RequestBody @Valid DeleteNewsRequest request){
         log.info("Received password: {}", request.getEnteredPassword());
         if(! checkService.checkAdminPassword(request.getEnteredPassword())){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
@@ -55,7 +53,7 @@ public class AdminController{
         return ResponseEntity.ok("News deleted successfully.");
     }
     @DeleteMapping("/delete/projects/{projectId}")
-    public ResponseEntity<?> deleteProject(@PathVariable("projectId") int projectId, @RequestBody DeleteProjectRequest request){
+    public ResponseEntity<?> deleteProject(@PathVariable("projectId") int projectId, @RequestBody @Valid DeleteProjectRequest request){
         if(! checkService.checkAdminPassword(request.getEnteredPassword())){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
         }
@@ -110,14 +108,13 @@ public class AdminController{
         }
     }
 
-//    @PostMapping("/check-admin")
-//    public ResponseEntity<String> checkAdmin(@RequestBody Map<String, String> requestBody){
-//        String enteredPassword = requestBody.get("password");
-//        if(checkService.checkAdminPassword(enteredPassword)){
-//            return ResponseEntity.ok("Access granted to post methods.");
-//        }else{
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
-//        }
-//    }
+    @PostMapping("/bio")
+    public ResponseEntity<?> createBio(@RequestBody @Valid BioRequest request){
+        if(! checkService.checkAdminPassword(request.getEnteredPassword())){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
+        }
+        return ResponseEntity.ok(bioService.createBio(request.getBioDTO()));
+    }
+
 }
 

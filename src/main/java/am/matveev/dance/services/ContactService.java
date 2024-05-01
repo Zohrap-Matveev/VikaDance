@@ -5,11 +5,10 @@ import am.matveev.dance.entities.ContactEntity;
 import am.matveev.dance.mappers.ContactMapper;
 import am.matveev.dance.repositories.ContactRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -20,14 +19,11 @@ public class ContactService{
     private final ContactMapper contactMapper;
 
     @Transactional
-    public ContactDTO create(ContactDTO contactDTO){
+    public ContactDTO create(@Valid ContactDTO contactDTO){
         log.info("Creating contact {}", contactDTO);
-        CompletableFuture.runAsync(() -> {
             ContactEntity contactEntity = contactMapper.toEntity(contactDTO);
             contactEntity = contactRepository.save(contactEntity);
             contactMapper.toDTO(contactEntity);
-        });
-
-        return null;
+        return contactDTO;
     }
 }

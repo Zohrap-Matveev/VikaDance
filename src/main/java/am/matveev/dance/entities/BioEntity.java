@@ -15,9 +15,12 @@ public class BioEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "image")
-    private byte[] image;
-
     @Column(name = "full_name")
     private String fullName;
+
+    @Column(name = "profession")
+    private String profession;
+
+    @Column(name = "description")
+    private String bioDescription;
 }
