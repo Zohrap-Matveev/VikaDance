@@ -15,7 +15,7 @@ public class NewsEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "title")
+    @Column(name = "title",unique = true)
     private String title;
 
     @Column(name = "date")

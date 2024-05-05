@@ -1,14 +1,11 @@
 package am.matveev.dance.controllers;
 
-import am.matveev.dance.dto.ContactDTO;
-import am.matveev.dance.dto.NewsDTO;
-import am.matveev.dance.dto.ProjectDTO;
+import am.matveev.dance.dto.*;
 import am.matveev.dance.entities.ContactEntity;
+import am.matveev.dance.entities.ImageEntity;
 import am.matveev.dance.mappers.ContactMapper;
-import am.matveev.dance.services.ContactService;
-import am.matveev.dance.services.EmailService;
-import am.matveev.dance.services.NewsService;
-import am.matveev.dance.services.ProjectService;
+import am.matveev.dance.repositories.ImageRepository;
+import am.matveev.dance.services.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,6 +27,8 @@ public class GetController{
     private final EmailService emailService;
     private final ContactService contactService;
     private final ContactMapper contactMapper;
+    private final ImageService imageService;
+
 
     @GetMapping("/news")
     public List<NewsDTO> getAllNews() {
@@ -42,7 +41,7 @@ public class GetController{
     }
 
     @GetMapping("/projects")
-    public List<ProjectDTO> getAllProjects() {
+    public List<ProjectDtoWithoutImage> getAllProjects() {
         return projectService.getProjects();
     }
 
@@ -57,7 +56,7 @@ public class GetController{
         ProjectDTO projectDTO = projectService.findOneProject(id);
         return ResponseEntity.status(HttpStatus.OK)
                         .contentType(MediaType.valueOf(MediaType.IMAGE_PNG_VALUE))
-                        .body(projectDTO.getBytes());
+                        .body(projectDTO.getImage());
     }
 
     @PostMapping("/contact/sendMessage")
@@ -76,6 +75,22 @@ public class GetController{
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send message.");
         }
+    }
+
+    @GetMapping("/images/{imageId}")
+    public ResponseEntity<byte[]> getImages(@PathVariable int imageId) {
+       ImageDTO imageDTO = imageService.findOneImage(imageId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.valueOf(MediaType.IMAGE_PNG_VALUE))
+                .body(imageDTO.getImages());
+    }
+
+    @GetMapping("/images")
+    public ResponseEntity<List<ImageDTO>> getAllImages() {
+        List<ImageDTO> imageDTOs = imageService.findAllImages();
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(imageDTOs);
     }
 
 }

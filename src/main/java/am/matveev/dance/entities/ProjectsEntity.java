@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,16 +17,16 @@ public class ProjectsEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "title")
+    @Column(name = "title",unique = true)
     private String title;
 
     @Lob
-    @Column(name = "bytes")
-    private byte[] bytes;
+    @Column(name = "image")
+    private byte[] image;
 
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "projects")
-    private List<ImageEntity> images = new ArrayList<>();
+    @OneToMany(mappedBy = "projects",fetch = FetchType.LAZY)
+    private List<ImageEntity> images;
 }

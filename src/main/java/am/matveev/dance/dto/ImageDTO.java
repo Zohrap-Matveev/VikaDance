@@ -1,11 +1,9 @@
 package am.matveev.dance.dto;
 
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class ImageDTO{
 
     private int id;
@@ -13,8 +11,6 @@ public class ImageDTO{
     @NotEmpty(message = "Name must not be empty")
     private String name;
 
-    private long size;
-
     @NotEmpty(message = "Image must not be empty")
-    private byte[] bytes;
+    private byte[] images;
 }

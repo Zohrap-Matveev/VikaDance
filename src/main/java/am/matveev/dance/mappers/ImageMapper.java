@@ -8,5 +8,6 @@ import org.mapstruct.Mapper;
 public interface ImageMapper{
 
     ImageEntity toImageEntity(ImageDTO imageDTO);
+
     ImageDTO toDTO(ImageEntity imageEntity);
 }

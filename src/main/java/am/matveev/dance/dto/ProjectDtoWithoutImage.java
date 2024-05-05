@@ -1,12 +1,12 @@
 package am.matveev.dance.dto;
 
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.List;
-
-@Data
-public class ProjectDTO{
+@Getter
+@Setter
+public class ProjectDtoWithoutImage{
 
     private int id;
 
@@ -15,10 +15,4 @@ public class ProjectDTO{
 
     @NotEmpty(message = "Image must not be empty")
     private byte[] image;
-
-    @NotEmpty(message = "Description must not be empty")
-    private String description;
-
-    private List<ImageDTO> imageDTOS;
-
 }

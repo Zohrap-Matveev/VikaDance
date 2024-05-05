@@ -15,17 +15,11 @@ public class ImageEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "size")
-    private long size;
-
     @Column(length = 1000000)
     @Lob
-    private byte[] bytes;
+    private byte[] images;
 
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     private ProjectsEntity projects;
 
 }
