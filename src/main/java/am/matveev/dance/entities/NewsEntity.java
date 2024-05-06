@@ -26,4 +26,5 @@ public class NewsEntity{
 
     @Column(name = "details")
     private String details;
+
 }

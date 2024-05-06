@@ -61,12 +61,6 @@ public class ProjectService{
         }
     }
 
-    /*
-    create image entity
-    set project id
-    set image
-    save
-     */
     @Transactional
     public ProjectDTO addPhotoToProject(int projectId, MultipartFile file) throws IOException {
         log.info("Adding photo to project with ID: {}", projectId);
