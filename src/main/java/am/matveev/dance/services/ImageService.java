@@ -36,4 +36,8 @@ public class ImageService{
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public void deleteImage(int imageId){
+        imageRepository.deleteById(imageId);
+    }
 }

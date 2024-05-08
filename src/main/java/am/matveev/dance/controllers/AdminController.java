@@ -1,25 +1,20 @@
 package am.matveev.dance.controllers;
 
 import am.matveev.dance.dto.ProjectDTO;
-import am.matveev.dance.repositories.ProjectRepository;
 import am.matveev.dance.request.*;
-import am.matveev.dance.services.BioService;
-import am.matveev.dance.services.CheckService;
-import am.matveev.dance.services.NewsService;
-import am.matveev.dance.services.ProjectService;
+import am.matveev.dance.services.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 @Slf4j
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 @RestController
 @RequiredArgsConstructor
 public class AdminController{
@@ -28,7 +23,7 @@ public class AdminController{
     private final ProjectService projectService;
     private final CheckService checkService;
     private final BioService bioService;
-    private final ProjectRepository projectRepository;
+    private final ImageService imageService;
 
     @PostMapping("/news")
     public ResponseEntity<?> postNews(@RequestBody @Valid NewsRequest request){
@@ -61,12 +56,12 @@ public class AdminController{
     public ResponseEntity<?> createProject(@RequestPart("file") MultipartFile file,
                                            @RequestPart("title") String title,
                                            @RequestPart("desc") String description,
-                                           @RequestPart("enteredPassword") String enteredPassword) {
-        if (!checkService.checkAdminPassword(enteredPassword)) {
+                                           @RequestPart("enteredPassword") String enteredPassword){
+        if(! checkService.checkAdminPassword(enteredPassword)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
         }
 
-        try {
+        try{
             ProjectDTO projectDTO = new ProjectDTO();
             projectDTO.setTitle(title);
             projectDTO.setDescription(description);
@@ -74,7 +69,7 @@ public class AdminController{
             projectDTO.setImage(imageBytes);
             projectService.createProject(projectDTO);
             return ResponseEntity.ok().build();
-        } catch (IOException e) {
+        }catch(IOException e){
             log.error("Failed to read image file: {}", e.getMessage());
             throw new RuntimeException("Failed to read image file", e);
         }
@@ -83,20 +78,19 @@ public class AdminController{
     @PutMapping("/update/projects/{projectId}/add-photo")
     public ResponseEntity<?> addPhotoToProject(@PathVariable int projectId,
                                                @RequestPart("file") MultipartFile file,
-                                               @RequestPart("enteredPassword") String enteredPassword) {
-        if (!checkService.checkAdminPassword(enteredPassword)) {
+                                               @RequestPart("enteredPassword") String enteredPassword){
+        if(! checkService.checkAdminPassword(enteredPassword)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
         }
 
-        try {
+        try{
             ProjectDTO updatedProject = projectService.addPhotoToProject(projectId, file);
             return ResponseEntity.ok(updatedProject);
-        } catch (Exception e) {
+        }catch(Exception e){
             log.error("Failed to add photo to project: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add photo");
         }
     }
-
 
     @PostMapping("/bio")
     public ResponseEntity<?> createBio(@RequestBody @Valid BioRequest request){
@@ -107,12 +101,21 @@ public class AdminController{
     }
 
     @DeleteMapping("/delete/projects/{projectId}")
-    public ResponseEntity<?> deleteProject(@PathVariable("projectId") int projectId, @RequestBody @Valid DeleteProjectRequest request){
-        if(! checkService.checkAdminPassword(request.getEnteredPassword())){
+    public ResponseEntity<?> deleteProject(@PathVariable("projectId") int projectId, @RequestParam("enteredPassword") String enteredPassword){
+        if(! checkService.checkAdminPassword(enteredPassword)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
         }
         projectService.deleteProject(projectId);
         return ResponseEntity.ok("Project deleted successfully.");
+    }
+
+    @DeleteMapping("/delete/image/{imageId}")
+    public ResponseEntity<?> deleteImage(@PathVariable("imageId") int imageId, @RequestParam("enteredPassword") String enteredPassword){
+        if(! checkService.checkAdminPassword(enteredPassword)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
+        }
+        imageService.deleteImage(imageId);
+        return ResponseEntity.ok("Image deleted successfully.");
     }
 }
 

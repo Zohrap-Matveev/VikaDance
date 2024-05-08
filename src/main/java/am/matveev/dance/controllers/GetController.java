@@ -18,7 +18,7 @@ import java.util.Base64;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class GetController{
 
