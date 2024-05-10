@@ -1,7 +1,10 @@
 package am.matveev.dance.controllers;
 
 import am.matveev.dance.dto.ProjectDTO;
-import am.matveev.dance.request.*;
+import am.matveev.dance.request.BioRequest;
+import am.matveev.dance.request.DeleteNewsRequest;
+import am.matveev.dance.request.NewsRequest;
+import am.matveev.dance.request.UpdateNewsRequest;
 import am.matveev.dance.services.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -97,7 +100,9 @@ public class AdminController{
         if(! checkService.checkAdminPassword(request.getEnteredPassword())){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
         }
-        return ResponseEntity.ok(bioService.createBio(request.getBioDTO()));
+
+        bioService.createAndUpdateBio(request.getBioDTO());
+        return ResponseEntity.ok("Bio created successfully.");
     }
 
     @DeleteMapping("/delete/projects/{projectId}")

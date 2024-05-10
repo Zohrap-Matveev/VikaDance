@@ -28,6 +28,7 @@ public class GetController{
     private final ContactService contactService;
     private final ContactMapper contactMapper;
     private final ImageService imageService;
+    private final BioService bioService;
 
 
     @GetMapping("/news")
@@ -93,5 +94,9 @@ public class GetController{
                 .body(imageDTOs);
     }
 
+    @GetMapping("/bio")
+    public List<BioDTO> getAllBios() {
+        return bioService.findAllBios();
+    }
 }
 

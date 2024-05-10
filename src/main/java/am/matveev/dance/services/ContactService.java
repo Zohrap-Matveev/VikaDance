@@ -4,11 +4,11 @@ import am.matveev.dance.dto.ContactDTO;
 import am.matveev.dance.entities.ContactEntity;
 import am.matveev.dance.mappers.ContactMapper;
 import am.matveev.dance.repositories.ContactRepository;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
