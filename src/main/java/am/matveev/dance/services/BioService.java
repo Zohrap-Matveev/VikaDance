@@ -19,14 +19,6 @@ public class BioService{
     private final BioRepository bioRepository;
     private final BioMapper bioMapper;
 
-
-//    @Transactional
-//    public BioDTO createBio(BioDTO bioDTO){
-//        BioEntity bioEntity = bioMapper.toEntity(bioDTO);
-//        bioRepository.save(bioEntity);
-//        return bioDTO;
-//    }
-
     @Transactional
     public void createAndUpdateBio(BioDTO newBioDTO){
         Optional<BioEntity> oldBioEntityOpt = bioRepository.findFirstByOrderById();
