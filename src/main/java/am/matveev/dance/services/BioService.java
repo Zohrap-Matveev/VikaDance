@@ -2,6 +2,7 @@ package am.matveev.dance.services;
 
 import am.matveev.dance.dto.BioDTO;
 import am.matveev.dance.entities.BioEntity;
+import am.matveev.dance.exceptions.BioNotFoundException;
 import am.matveev.dance.mappers.BioMapper;
 import am.matveev.dance.repositories.BioRepository;
 import lombok.RequiredArgsConstructor;

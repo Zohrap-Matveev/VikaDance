@@ -20,6 +20,7 @@ import java.io.IOException;
 @RequestMapping("/api/admin")
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class AdminController{
 
     private final NewsService newsService;
@@ -78,7 +79,7 @@ public class AdminController{
         }
     }
 
-    @PutMapping("/update/projects/{projectId}/add-photo")
+    @PutMapping("/update/{projectId}/add-photo")
     public ResponseEntity<?> addPhotoToProject(@PathVariable int projectId,
                                                @RequestPart("file") MultipartFile file,
                                                @RequestPart("enteredPassword") String enteredPassword){
@@ -107,11 +108,17 @@ public class AdminController{
 
     @DeleteMapping("/delete/projects/{projectId}")
     public ResponseEntity<?> deleteProject(@PathVariable("projectId") int projectId, @RequestParam("enteredPassword") String enteredPassword){
+        ResponseEntity<String> UNAUTHORIZED = getStringResponseEntity(enteredPassword);
+        if(UNAUTHORIZED != null) return UNAUTHORIZED;
+        projectService.deleteProject(projectId);
+        return ResponseEntity.ok("Project deleted successfully.");
+    }
+
+    private ResponseEntity<String> getStringResponseEntity(String enteredPassword){
         if(! checkService.checkAdminPassword(enteredPassword)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
         }
-        projectService.deleteProject(projectId);
-        return ResponseEntity.ok("Project deleted successfully.");
+        return null;
     }
 
     @DeleteMapping("/delete/image/{imageId}")

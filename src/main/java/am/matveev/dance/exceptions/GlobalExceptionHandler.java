@@ -1,5 +1,6 @@
 package am.matveev.dance.exceptions;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler{
 
@@ -31,8 +33,18 @@ public class GlobalExceptionHandler{
 
     @ExceptionHandler({ImageNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleException(ImageNotFoundException ex){
+        log.error("Image with this id not found", ex);
         ErrorResponse response = new ErrorResponse(
                 "Image with this id not found",
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({BioNotFoundException.class})
+    public ResponseEntity<ErrorResponse> handleException(BioNotFoundException ex){
+        ErrorResponse response = new ErrorResponse(
+                "Bio with this id not found",
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);

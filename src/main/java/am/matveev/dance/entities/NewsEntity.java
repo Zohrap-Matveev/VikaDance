@@ -27,4 +27,7 @@ public class NewsEntity{
     @Column(name = "details")
     private String details;
 
+    @Column(name = "instagramLink")
+    private String instagramLink;
+
 }

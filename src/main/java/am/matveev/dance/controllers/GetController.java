@@ -2,9 +2,9 @@ package am.matveev.dance.controllers;
 
 import am.matveev.dance.dto.*;
 import am.matveev.dance.entities.ContactEntity;
-import am.matveev.dance.entities.ImageEntity;
+import am.matveev.dance.exceptions.ImageNotFoundException;
+import am.matveev.dance.exceptions.ProjectNotFoundException;
 import am.matveev.dance.mappers.ContactMapper;
-import am.matveev.dance.repositories.ImageRepository;
 import am.matveev.dance.services.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,14 +12,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Base64;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class GetController{
 
     private final NewsService newsService;
@@ -61,15 +62,11 @@ public class GetController{
     }
 
     @PostMapping("/contact/sendMessage")
-    public ResponseEntity<String> sendMessage(@RequestParam("email") String email, @RequestParam("message") String message,
-                                               ContactDTO contactDTO) {
+    public ResponseEntity<String> sendMessage(@Valid @RequestBody ContactDTO contactDTO) {
         ContactEntity contactEntity = contactMapper.toEntity(contactDTO);
-        contactEntity.setEmail(email);
-        contactEntity.setMessage(message);
-
         contactService.create(contactDTO);
 
-        boolean messageSent = emailService.sendEmailToAdmin(email, message);
+        boolean messageSent = emailService.sendEmailToAdmin(contactDTO.getEmail(), contactDTO.getMessage());
 
         if (messageSent) {
             return ResponseEntity.ok("Your message has been sent successfully!");
@@ -98,5 +95,37 @@ public class GetController{
     public List<BioDTO> getAllBios() {
         return bioService.findAllBios();
     }
+
+    @GetMapping("/{projectId}/images")
+    public ResponseEntity<byte[]> getImagesByProjectId(@PathVariable int projectId) {
+        try {
+            List<byte[]> images = projectService.getImagesByProjectId(projectId);
+            byte[] concatenatedImages = concatenateImages(images);
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(concatenatedImages);
+        } catch (ProjectNotFoundException | IOException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    private byte[] concatenateImages(List<byte[]> images) throws IOException{
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        for (byte[] image : images) {
+            baos.write(image);
+        }
+        return baos.toByteArray();
+    }
+
+    @GetMapping("/{projectId}/images/{imageId}")
+    public ResponseEntity<byte[]> getImageByProjectIdAndImageId(@PathVariable int projectId, @PathVariable int imageId) {
+        try {
+            byte[] imageData = projectService.getImageByProjectIdAndImageId(projectId, imageId);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(imageData);
+        } catch (ImageNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
 

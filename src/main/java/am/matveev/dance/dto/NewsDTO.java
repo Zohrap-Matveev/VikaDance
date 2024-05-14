@@ -22,4 +22,7 @@ public class NewsDTO{
     @NotEmpty(message = "Details must not be empty")
     private String details;
 
+    @NotEmpty(message = "InstagramLink must not be empty")
+    private String instagramLink;
+
 }

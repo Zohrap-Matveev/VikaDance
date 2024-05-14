@@ -4,6 +4,7 @@ import am.matveev.dance.dto.ProjectDTO;
 import am.matveev.dance.dto.ProjectDtoWithoutImage;
 import am.matveev.dance.entities.ImageEntity;
 import am.matveev.dance.entities.ProjectsEntity;
+import am.matveev.dance.exceptions.ImageNotFoundException;
 import am.matveev.dance.exceptions.ProjectNotFoundException;
 import am.matveev.dance.mappers.ProjectMapper;
 import am.matveev.dance.repositories.ImageRepository;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -92,5 +94,40 @@ public class ProjectService{
     @Transactional
     public void deleteProject(int projectId){
         projectRepository.deleteById(projectId);
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<byte[]> getImagesByProjectId(int projectId) {
+        ProjectsEntity project = projectRepository.findById(projectId)
+                .orElseThrow(ProjectNotFoundException::new);
+
+        List<ImageEntity> images = project.getImages();
+
+        return images.stream()
+                .map(ImageEntity::getImages)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] getImageByProjectIdAndImageId(int projectId, int imageId){
+        try{
+            ProjectsEntity project = projectRepository.findById(projectId)
+                    .orElseThrow(ProjectNotFoundException :: new);
+
+            ImageEntity image = imageRepository.findById(imageId)
+                    .orElseThrow(ImageNotFoundException :: new);
+
+            if(! Objects.equals(image.getProjects().getId(), project.getId())){
+                throw new ImageNotFoundException();
+            }
+            return image.getImages();
+        }catch(ProjectNotFoundException | ImageNotFoundException ex){
+            log.error("Error occurred while getting image", ex);
+            throw ex;
+        }catch(Exception ex){
+            log.error("Unexpected error occurred while getting image", ex);
+            throw ex;
+        }
     }
 }
