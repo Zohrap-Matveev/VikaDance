@@ -16,9 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -96,7 +94,6 @@ public class ProjectService{
         projectRepository.deleteById(projectId);
     }
 
-
     @Transactional(readOnly = true)
     public List<byte[]> getImagesByProjectId(int projectId) {
         ProjectsEntity project = projectRepository.findById(projectId)
@@ -130,4 +127,5 @@ public class ProjectService{
             throw ex;
         }
     }
+
 }

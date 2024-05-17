@@ -21,6 +21,6 @@ public class BioEntity{
     @Column(name = "profession")
     private String profession;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 3000)
     private String bioDescription;
 }
